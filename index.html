@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Socket.IO chat</title>
+  </head>
+
+  <body>
+    <button id="3">3 Seconds</button>
+    <button id="5">5 Seconds</button>
+    <button id="10">10 Seconds</button>
+    <button id="30">30 Seconds</button>
+    <h2>Queue</h2>
+    <ul id="queue"></ul>
+    <h2>In Progress</h2>
+    <ul id="progress"></ul>
+  </body>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+  
+    const b3 = document.getElementById('3');
+    const b5 = document.getElementById('5');
+    const b10 = document.getElementById('10');
+    const b30 = document.getElementById('30');
+
+    b3.addEventListener("click", () => {
+        socket.emit('request', { t: 3, data: "Three second event complete" });
+    });
+    b5.addEventListener("click", () => {
+        socket.emit('request', { t: 5, data: "Five second event complete" });
+    });
+    b10.addEventListener("click", () => {
+        socket.emit('request', { t: 10, data: "Ten second event complete" });
+    });
+    b30.addEventListener("click", () => {
+        socket.emit('request', { t: 30, data: "Thirty second event complete" });
+    });
+  
+    socket.on('queue', (msg) => {
+        const queue = document.getElementById("queue");
+        queue.replaceChildren();
+        msg.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item.data;
+            queue.appendChild(li);
+        });
+    });
+
+    socket.on('progress', (msg) => {
+        const progress = document.getElementById("progress");
+        progress.replaceChildren();
+        msg.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `${item.workerId} - ${item.t}`;
+            progress.appendChild(li);
+        });
+    });
+  </script>
+</html>
